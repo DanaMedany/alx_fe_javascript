@@ -178,7 +178,7 @@ async function syncQuotesWithServer() {
     populateCategories();
     filterQuotes();
 
-    showNotification("Quotes synced with the server!");
+    showNotification("Quotes synced with server!");
   } catch (error) {
     showNotification("Error syncing quotes with the server.");
   }
