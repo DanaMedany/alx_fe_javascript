@@ -14,6 +14,8 @@ let quotes = [
   },
 ];
 
+const API_URL = "https://jsonplaceholder.typicode.com/posts"; // Mock API URL
+
 // Function to display quotes
 function showQuotes(quotesToShow) {
   const quoteDisplay = document.getElementById("quoteDisplay");
@@ -150,6 +152,27 @@ function importFromJsonFile(event) {
   fileReader.readAsText(event.target.files[0]);
 }
 
+// Function to fetch quotes from the server
+async function fetchQuotesFromServer() {
+  const response = await fetch(API_URL);
+  const serverQuotes = await response.json();
+  return serverQuotes.map((q) => ({ text: q.title, category: "Server" }));
+}
+
+// Function to sync quotes with the server
+async function syncQuotesWithServer() {
+  const serverQuotes = await fetchQuotesFromServer();
+  const localQuotes = JSON.parse(localStorage.getItem("quotes")) || [];
+
+  const mergedQuotes = [...localQuotes, ...serverQuotes];
+  quotes = mergedQuotes;
+  saveQuotes();
+  populateCategories();
+  filterQuotes();
+
+  alert("Quotes synced with the server!");
+}
+
 // Initial calls to load quotes and setup the page
 loadQuotes();
 showQuotes(quotes);
@@ -167,6 +190,9 @@ document
 document
   .getElementById("categoryFilter")
   .addEventListener("change", filterQuotes);
+
+// Periodic sync with the server
+setInterval(syncQuotesWithServer, 60000); // Sync every minute
 
 // Restore the last selected category filter and filter quotes accordingly
 const selectedCategory = localStorage.getItem("selectedCategory") || "all";
