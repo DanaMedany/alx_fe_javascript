@@ -74,12 +74,60 @@ function addQuote() {
     quotes.push({ text: newQuoteText, category: newQuoteCategory });
     document.getElementById("newQuoteText").value = "";
     document.getElementById("newQuoteCategory").value = "";
+    saveQuotes();
     alert("New quote added successfully!");
   } else {
     alert("Please enter both a quote and a category.");
   }
 }
 
-// Initial call to display a quote when the page loads
+// Function to save quotes to local storage
+function saveQuotes() {
+  localStorage.setItem("quotes", JSON.stringify(quotes));
+}
+
+// Function to load quotes from local storage
+function loadQuotes() {
+  const storedQuotes = localStorage.getItem("quotes");
+  if (storedQuotes) {
+    quotes = JSON.parse(storedQuotes);
+  }
+}
+
+// Function to export quotes to a JSON file
+function exportQuotes() {
+  const dataStr = JSON.stringify(quotes);
+  const dataUri =
+    "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
+
+  const exportFileDefaultName = "quotes.json";
+
+  const linkElement = document.createElement("a");
+  linkElement.setAttribute("href", dataUri);
+  linkElement.setAttribute("download", exportFileDefaultName);
+  linkElement.click();
+}
+
+// Function to import quotes from a JSON file
+function importFromJsonFile(event) {
+  const fileReader = new FileReader();
+  fileReader.onload = function (event) {
+    const importedQuotes = JSON.parse(event.target.result);
+    quotes.push(...importedQuotes);
+    saveQuotes();
+    alert("Quotes imported successfully!");
+  };
+  fileReader.readAsText(event.target.files[0]);
+}
+
+// Initial call to load quotes from local storage and display a quote
+loadQuotes();
 showRandomQuote();
 createAddQuoteForm();
+
+// Event listeners
+document.getElementById("newQuote").addEventListener("click", showRandomQuote);
+document.getElementById("exportQuotes").addEventListener("click", exportQuotes);
+document
+  .getElementById("importFile")
+  .addEventListener("change", importFromJsonFile);
