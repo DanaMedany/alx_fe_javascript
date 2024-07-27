@@ -95,7 +95,7 @@ function loadQuotes() {
 }
 
 // Function to export quotes to a JSON file
-function exportQuotes() {
+function exportToJsonFile() {
   const dataStr = JSON.stringify(quotes);
   const dataUri =
     "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
@@ -127,7 +127,9 @@ createAddQuoteForm();
 
 // Event listeners
 document.getElementById("newQuote").addEventListener("click", showRandomQuote);
-document.getElementById("exportQuotes").addEventListener("click", exportQuotes);
+document
+  .getElementById("exportQuotes")
+  .addEventListener("click", exportToJsonFile);
 document
   .getElementById("importFile")
   .addEventListener("change", importFromJsonFile);
