@@ -161,16 +161,38 @@ async function fetchQuotesFromServer() {
 
 // Function to sync quotes with the server
 async function syncQuotesWithServer() {
-  const serverQuotes = await fetchQuotesFromServer();
-  const localQuotes = JSON.parse(localStorage.getItem("quotes")) || [];
+  try {
+    const serverQuotes = await fetchQuotesFromServer();
+    const localQuotes = JSON.parse(localStorage.getItem("quotes")) || [];
 
-  const mergedQuotes = [...localQuotes, ...serverQuotes];
-  quotes = mergedQuotes;
-  saveQuotes();
-  populateCategories();
-  filterQuotes();
+    // Conflict resolution: Server data takes precedence
+    const mergedQuotes = [...localQuotes, ...serverQuotes];
+    quotes = mergedQuotes;
+    saveQuotes();
+    populateCategories();
+    filterQuotes();
 
-  alert("Quotes synced with the server!");
+    showNotification("Quotes synced with the server!");
+  } catch (error) {
+    showNotification("Error syncing quotes with the server.");
+  }
+}
+
+// Function to periodically check for new quotes from the server
+function startPeriodicSync() {
+  setInterval(syncQuotesWithServer, 60000); // Sync every minute
+}
+
+// Function to show notifications
+function showNotification(message) {
+  const notification = document.createElement("div");
+  notification.className = "notification";
+  notification.textContent = message;
+  document.body.appendChild(notification);
+
+  setTimeout(() => {
+    document.body.removeChild(notification);
+  }, 3000);
 }
 
 // Initial calls to load quotes and setup the page
@@ -191,8 +213,8 @@ document
   .getElementById("categoryFilter")
   .addEventListener("change", filterQuotes);
 
-// Periodic sync with the server
-setInterval(syncQuotesWithServer, 60000); // Sync every minute
+// Start periodic sync with the server
+startPeriodicSync();
 
 // Restore the last selected category filter and filter quotes accordingly
 const selectedCategory = localStorage.getItem("selectedCategory") || "all";
