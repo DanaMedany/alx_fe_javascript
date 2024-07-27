@@ -1,3 +1,4 @@
+// Array to hold quote objects
 let quotes = [
   {
     text: "The greatest glory in living lies not in never falling, but in rising every time we fall.",
@@ -13,7 +14,7 @@ let quotes = [
   },
 ];
 
-// Function to display a random quote or filtered quotes
+// Function to display quotes
 function showQuotes(quotesToShow) {
   const quoteDisplay = document.getElementById("quoteDisplay");
   quoteDisplay.innerHTML = "";
@@ -35,9 +36,6 @@ function showRandomQuote() {
   const randomIndex = Math.floor(Math.random() * quotes.length);
   showQuotes([quotes[randomIndex]]);
 }
-
-// Event listener for the 'Show New Quote' button
-document.getElementById("newQuote").addEventListener("click", showRandomQuote);
 
 // Function to create the form for adding new quotes
 function createAddQuoteForm() {
@@ -72,7 +70,7 @@ function addQuote() {
     document.getElementById("newQuoteText").value = "";
     document.getElementById("newQuoteCategory").value = "";
     saveQuotes();
-    updateCategoryFilter();
+    populateCategories();
     alert("New quote added successfully!");
   } else {
     alert("Please enter both a quote and a category.");
@@ -92,8 +90,8 @@ function loadQuotes() {
   }
 }
 
-// Function to update the category filter options
-function updateCategoryFilter() {
+// Function to populate category filter dropdown with unique categories
+function populateCategories() {
   const categoryFilter = document.getElementById("categoryFilter");
   const categories = [...new Set(quotes.map((quote) => quote.category))];
 
@@ -146,7 +144,7 @@ function importFromJsonFile(event) {
     const importedQuotes = JSON.parse(event.target.result);
     quotes.push(...importedQuotes);
     saveQuotes();
-    updateCategoryFilter();
+    populateCategories();
     alert("Quotes imported successfully!");
   };
   fileReader.readAsText(event.target.files[0]);
@@ -156,7 +154,7 @@ function importFromJsonFile(event) {
 loadQuotes();
 showQuotes(quotes);
 createAddQuoteForm();
-updateCategoryFilter();
+populateCategories();
 
 // Event listeners
 document.getElementById("newQuote").addEventListener("click", showRandomQuote);
@@ -166,3 +164,11 @@ document
 document
   .getElementById("importFile")
   .addEventListener("change", importFromJsonFile);
+document
+  .getElementById("categoryFilter")
+  .addEventListener("change", filterQuotes);
+
+// Restore the last selected category filter and filter quotes accordingly
+const selectedCategory = localStorage.getItem("selectedCategory") || "all";
+document.getElementById("categoryFilter").value = selectedCategory;
+filterQuotes();
