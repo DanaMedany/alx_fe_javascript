@@ -14,7 +14,7 @@ let quotes = [
   },
 ];
 
-const API_URL = "https://jsonplaceholder.typicode.com/posts"; // Mock API URL
+const API_URL = "https://jsonplaceholder.typicode.com"; // Mock API URL
 
 // Function to display quotes
 function showQuotes(quotesToShow) {
@@ -154,7 +154,12 @@ function importFromJsonFile(event) {
 
 // Function to fetch quotes from the server
 async function fetchQuotesFromServer() {
-  const response = await fetch(API_URL);
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
   const serverQuotes = await response.json();
   return serverQuotes.map((q) => ({ text: q.title, category: "Server" }));
 }
